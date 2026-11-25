@@ -5,16 +5,17 @@
    modals and confirm-delete (recipes themselves are untouched).
    ============================================================ */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import UserLayout from '../components/UserLayout.jsx';
 import ConfirmModal from '../components/ConfirmModal.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
-import { getRecipes, getUserCollections } from '../services/storageService.js';
+import {
+  getUserCollections, resolveRecipe, isExternalRecipeId,
+  getExternalRecipe, hydrateExternalRecipes, FALLBACK_IMG,
+} from '../services/storageService.js';
 import { getData, saveData, LS_KEYS, fbGetRecipeRating, fbGenerateId, fbGetToday } from '../services/storageCore.js';
-
-const FALLBACK_IMG = 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80';
 
 export default function Collections() {
   const { user } = useAuth();
@@ -28,7 +29,28 @@ export default function Collections() {
   const [nameInput, setNameInput] = useState('');
 
   const cols = getUserCollections(user.id);
+  const collectionIdsKey = cols.map((c) => (c.recipeIds || []).join(',')).join('|');
   const reRender = () => force((n) => n + 1);
+
+  /* Collections may hold global (TheMealDB) ids — fetch any that are
+     not cached yet so their rows render after a reload. */
+  useEffect(() => {
+    const ids = (getData(LS_KEYS.COLLECTIONS) || [])
+      .filter((c) => c.userId === user.id)
+      .flatMap((c) => c.recipeIds || []);
+    const missing = ids.filter((rid) => isExternalRecipeId(rid) && !getExternalRecipe(rid));
+    if (!missing.length) return;
+    let alive = true;
+    hydrateExternalRecipes(missing).then((fetched) => { if (alive && fetched.length) reRender(); });
+    return () => { alive = false; };
+  }, [user.id, collectionIdsKey]); // eslint-disable-line
+
+  /* A collection can disappear (deleted in another tab) while open. */
+  useEffect(() => {
+    if (view.view !== 'detail') return;
+    const exists = (getData(LS_KEYS.COLLECTIONS) || []).some((c) => c.id === view.colId);
+    if (!exists) setView({ view: 'grid' });
+  }, [view]);
 
   const createCollection = () => {
     const name = nameInput.trim();
@@ -73,9 +95,9 @@ export default function Collections() {
   /* ---------------- Detail view ---------------- */
   if (view.view === 'detail') {
     const col = (getData(LS_KEYS.COLLECTIONS) || []).find((c) => c.id === view.colId);
-    if (!col) { setView({ view: 'grid' }); return null; }
+    if (!col) return null;
 
-    const recipes = getRecipes().filter((r) => (col.recipeIds || []).indexOf(r.id) !== -1);
+    const recipes = (col.recipeIds || []).map(resolveRecipe).filter(Boolean);
     return (
       <UserLayout>
         <div className="container section-pad">
@@ -103,7 +125,11 @@ export default function Collections() {
                     <img src={r.image} alt={r.name} onError={(e) => { e.currentTarget.src = FALLBACK_IMG; }} />
                     <div>
                       <div className="row-title"><Link to={`/recipe/${r.id}`}>{r.name}</Link></div>
-                      <div className="row-sub">{r.cuisine} • {r.category} • {rating.count ? `★ ${rating.avg.toFixed(1)}` : 'No ratings'}</div>
+                      <div className="row-sub">
+                        {[r.cuisine, r.category].filter(Boolean).join(' • ')}
+                        {r.cuisine || r.category ? ' • ' : ''}
+                        {rating.count ? `★ ${rating.avg.toFixed(1)}` : 'No ratings'}
+                      </div>
                     </div>
                     <div className="row-actions">
                       <Link className="btn btn-ghost btn-sm" to={`/recipe/${r.id}`}>View</Link>
@@ -143,7 +169,20 @@ export default function Collections() {
               </div>
             </div>
           ))}
-          <div className="collection-card add-coll-card" id="new-collection-card" onClick={() => { setNameInput(''); setModal('create'); }}>
+          <div
+            className="collection-card add-coll-card"
+            id="new-collection-card"
+            role="button"
+            tabIndex={0}
+            onClick={() => { setNameInput(''); setModal('create'); }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setNameInput('');
+                setModal('create');
+              }
+            }}
+          >
             ＋<br />Create New Collection
           </div>
         </div>
@@ -154,7 +193,7 @@ export default function Collections() {
           <div className="modal-box">
             <div className="modal-head">
               <h3>{modal === 'create' ? 'Create New Collection' : 'Rename Collection'}</h3>
-              <button className="modal-close" onClick={() => setModal(null)}>&times;</button>
+              <button type="button" className="modal-close" aria-label="Close" onClick={() => setModal(null)}>&times;</button>
             </div>
             <div className="form-group">
               <label>Collection Name <span className="req">*</span></label>

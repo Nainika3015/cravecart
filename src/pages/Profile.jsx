@@ -6,11 +6,13 @@
    ============================================================ */
 
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import UserLayout from '../components/UserLayout.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
 import { getRecipes, getUserCollections } from '../services/storageService.js';
 import { getData, saveData, LS_KEYS, fbFormatDate } from '../services/storageCore.js';
+import { getPreferences, preferencesSummary } from '../services/preferences.js';
 
 export default function Profile() {
   const { user, updateCurrentUser } = useAuth();
@@ -22,6 +24,8 @@ export default function Profile() {
   const savedCount = (user.savedRecipes || []).length;
   const createdCount = recipes.filter((r) => r.author === user.id).length;
   const collCount = getUserCollections(user.id).length;
+  const prefs = getPreferences(user.id);
+  const prefChips = preferencesSummary(prefs);
 
   const submit = (e) => {
     e.preventDefault();
@@ -88,6 +92,32 @@ export default function Profile() {
                 <div className="stat-num">{collCount}</div>
                 <div className="stat-lbl">Collections</div>
               </div>
+            </div>
+
+            <div className="form-card" style={{ maxWidth: 'none', marginBottom: 18 }}>
+              <div className="section-head" style={{ marginBottom: 12 }}>
+                <div>
+                  <h3 style={{ margin: 0 }}>🍽️ Cooking Preferences</h3>
+                  <p className="muted small" style={{ margin: '4px 0 0' }}>
+                    {prefs.onboarded
+                      ? 'Used for your personalised homepage, pantry matching and recommendations.'
+                      : 'Not set up yet — personalise CraveCart in about a minute.'}
+                  </p>
+                </div>
+                <Link to="/onboarding" className="btn btn-outline btn-sm">
+                  {prefs.onboarded ? 'Edit preferences' : 'Set up'}
+                </Link>
+              </div>
+              {prefChips.length ? (
+                <div className="pref-chips">
+                  {prefChips.map((chip) => <span className="pref-chip" key={chip}>{chip}</span>)}
+                </div>
+              ) : (
+                <p className="muted small" style={{ margin: 0 }}>No preferences saved yet.</p>
+              )}
+              <p className="field-note" style={{ marginTop: 12 }}>
+                Stored on this device with your account. <Link to="/pantry">Open your Smart Pantry →</Link>
+              </p>
             </div>
 
             <div className="form-card" style={{ maxWidth: 'none' }}>

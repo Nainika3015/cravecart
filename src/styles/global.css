@@ -457,7 +457,10 @@ textarea.form-control { resize: vertical; min-height: 90px; }
 @media (max-width: 900px) {
   .footer-grid { grid-template-columns: 1fr 1fr; }
 }
-@media (max-width: 768px) {
+/* The navbar needs its hamburger earlier than the rest of the layout:
+   with ten links plus the language selector it would overflow a
+   1024px laptop. */
+@media (max-width: 1120px) {
   .nav-toggle { display: block; }
   .nav-links {
     display: none;
@@ -472,9 +475,13 @@ textarea.form-control { resize: vertical; min-height: 90px; }
     gap: 14px;
     border-bottom: 1px solid var(--border);
     box-shadow: var(--shadow-md);
+    max-height: calc(100dvh - 68px);
+    overflow-y: auto;
   }
   .nav-links.open { display: flex; }
   .nav-user { gap: 8px; }
+}
+@media (max-width: 768px) {
   .section-title { font-size: 1.4rem; }
   .form-row { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }

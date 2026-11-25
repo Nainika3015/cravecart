@@ -1,12 +1,16 @@
 /* ============================================================
    CraveCart - Footer.jsx (same classes/structure as legacy)
+   Localized through the shared i18n dictionary.
    ============================================================ */
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useI18n } from '../i18n/I18nContext.jsx';
 import { FBC_LOGO_SVG } from '../services/storageCore.js';
 
 export default function Footer() {
+  const { t } = useI18n();
+
   return (
     <footer className="footer">
       <div className="container">
@@ -17,24 +21,26 @@ export default function Footer() {
               <span className="logo-text">Crave<span style={{ color: 'var(--accent)' }}>Cart</span></span>
             </div>
             <p className="small mt-1" style={{ color: '#9a9aa5', maxWidth: 300 }}>
-              Discover. Create. Crave. — Search, save, cook and share your favourite recipes.
+              {t('footer.tagline')}
             </p>
           </div>
           <div>
-            <h4>Quick Links</h4>
-            <Link to="/">Home</Link>
-            <Link to="/explore">Explore Recipes</Link>
-            <Link to="/collections">Collections</Link>
-            <Link to="/create">Create Recipe</Link>
+            <h4>{t('footer.quickLinks')}</h4>
+            <Link to="/">{t('nav.home')}</Link>
+            <Link to="/explore">{t('home.explore')}</Link>
+            <Link to="/collections">{t('nav.collections')}</Link>
+            <Link to="/create">{t('nav.create')}</Link>
           </div>
           <div>
-            <h4>Account</h4>
-            <Link to="/login">Login</Link>
-            <Link to="/signup">Sign Up</Link>
-            <Link to="/admin">Admin</Link>
+            <h4>{t('footer.account')}</h4>
+            <Link to="/login">{t('nav.login')}</Link>
+            <Link to="/signup">{t('nav.signup')}</Link>
+            <Link to="/admin">{t('footer.admin')}</Link>
           </div>
         </div>
-        <div className="footer-bottom">© 2026 CraveCart – Food Recipe &amp; Meal Planning App. Built with React + Vite.</div>
+        <div className="footer-bottom">
+          © 2026 CraveCart – {t('footer.rights')}
+        </div>
       </div>
     </footer>
   );

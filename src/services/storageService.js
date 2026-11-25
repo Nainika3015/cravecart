@@ -7,8 +7,15 @@
    ============================================================ */
 
 import { LS_KEYS, getData, saveData } from './storageCore.js';
+import {
+  getExternalRecipe, saveExternalRecipe, hydrateExternalRecipes, getCachedExternalRecipes
+} from './mealDb.js';
 
 export { LS_KEYS, getData, saveData };
+export { getExternalRecipe, saveExternalRecipe, hydrateExternalRecipes, getCachedExternalRecipes };
+
+/* Placeholder used whenever a recipe image is missing or fails to load. */
+export const FALLBACK_IMG = 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80';
 
 export const getUsers = () => getData(LS_KEYS.USERS) || [];
 export const getCategories = () => getData(LS_KEYS.CATEGORIES) || [];
@@ -63,6 +70,23 @@ export const saveRecipes = (list) => saveData(LS_KEYS.RECIPES, list);
 export const getUserCollections = (userId) =>
   (getData(LS_KEYS.COLLECTIONS) || []).filter((c) => c.userId === userId);
 
+/* One pass over the reviews instead of re-reading Local Storage for
+   every card, sort comparison or meta box. Shape: { [recipeId]: { avg, count } } */
+export function getRatingsMap() {
+  const map = {};
+  (getData(LS_KEYS.REVIEWS) || []).forEach((rv) => {
+    const entry = map[rv.recipeId] || (map[rv.recipeId] = { total: 0, count: 0 });
+    entry.total += Number(rv.rating || 0);
+    entry.count += 1;
+  });
+  Object.keys(map).forEach((id) => {
+    const entry = map[id];
+    entry.avg = Math.round((entry.total / entry.count) * 10) / 10;
+    delete entry.total;
+  });
+  return map;
+}
+
 /* Category icon map (from legacy recipes.js fbCatIcon) */
 export function catIcon(name) {
   const map = {
@@ -82,4 +106,40 @@ export function countCategoryRecipes(category, recipes) {
     (cuisineNames.indexOf(category.name) !== -1 && r.cuisine === category.name) ||
     (category.name === 'Vegetarian' && (r.dietaryPreference === 'Vegetarian' || r.dietaryPreference === 'Vegan'))
   ).length;
+}
+
+/* ============================================================
+   Global (TheMealDB) recipe helpers
+   ============================================================ */
+
+export const isExternalRecipeId = (id) => typeof id === 'string' && id.indexOf('mealdb_') === 0;
+
+/* Resolves a recipe id from either the local catalogue or the cached
+   TheMealDB set — every page that lists saved/collected recipes uses
+   this so global recipes behave like local ones. */
+export function resolveRecipe(id) {
+  if (!id) return null;
+  if (isExternalRecipeId(id)) return getExternalRecipe(id);
+  return (getData(LS_KEYS.RECIPES) || []).find((r) => r.id === id) || null;
+}
+
+/* Recently viewed ids, kept per account in Local Storage. */
+export function recordRecentlyViewed(userId, recipeId) {
+  if (!userId || !recipeId) return;
+  try {
+    const key = 'cravecart_recent_' + userId;
+    const list = JSON.parse(localStorage.getItem(key) || '[]');
+    localStorage.setItem(key, JSON.stringify([recipeId, ...list.filter((x) => x !== recipeId)].slice(0, 12)));
+  } catch (e) {
+    /* ignore */
+  }
+}
+
+export function getRecentlyViewed(userId) {
+  if (!userId) return [];
+  try {
+    return JSON.parse(localStorage.getItem('cravecart_recent_' + userId) || '[]');
+  } catch (e) {
+    return [];
+  }
 }

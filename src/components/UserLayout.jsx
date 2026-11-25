@@ -1,7 +1,6 @@
 /* ============================================================
    CraveCart - UserLayout.jsx
-   Wraps every User-module page: navbar + content + footer,
-   exactly like the legacy page-shell.
+   Wraps every User-module page:    navbar + content + footer.
    ============================================================ */
 
 import React from 'react';

@@ -7,7 +7,7 @@ CraveCart is a food recipe web application where users can browse, search, filte
 1. **User Module** — signup, login, explore, save, collect, publish, rate, review, profile
 2. **Admin Module** — protected portal to manage recipes, users, categories and reviews
 
-The app is built with **React 18 + Vite** (single shared login/signup for both roles, protected routes) and every piece of data lives in the browser's **Local Storage**. No backend, no database.
+The app is built with **React 18 + Vite** (single shared login/signup for both roles, protected routes). User data lives in the browser's **Local Storage**; the deployed site is a static build with **no server API and no required environment variables** — recipe discovery uses TheMealDB directly and every other feature is local.
 
 ---
 
@@ -163,6 +163,17 @@ Or import the GitHub repo `Food-Recipe-app` in the Vercel dashboard — the Vite
 
 ---
 
+## 🌍 Phase 3 — Multilingual UI, discovery and hardening
+
+- **Multilingual UI** — eight languages (English, Hindi, Telugu, Tamil, Spanish, French, Arabic, Japanese) with local dictionaries; no external service or API key is needed. Recipe text from TheMealDB stays in its original language and is labelled as such.
+- **Multilingual UI** — English, Hindi, Telugu, Tamil, Spanish, French, Arabic (RTL) and Japanese for navigation, home, auth forms, common controls and the assistant. Recipe text is translated on demand by the AI endpoint.
+- **Auth layout** — centred 1120 px two-column card; password visibility toggle, inline validation, loading state and collapsible demo accounts.
+- **Tests** — `npm test` runs the ingredient-matching, allergen, discovery and i18n suites with Node's built-in runner.
+
+### Authentication limits
+
+Accounts and sessions are still stored in **Local Storage** (`cravecart_users`, `cravecart_currentUser`) with plain-text passwords. This is a prototype suitable for a hackathon demo only; it is **not** production authentication. Do not reuse a real password. Moving to Supabase Auth or Firebase Authentication requires a project and credentials before it can be wired in.
+
+---
+
 © 2026 CraveCart – built with React + Vite.
-#   c r a v e c a r t  
- 

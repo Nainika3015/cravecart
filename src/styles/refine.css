@@ -1,0 +1,301 @@
+/* ============================================================
+   CraveCart - refine.css
+   Layout refinement layer: spacing scale, wider container,
+   navigation dropdowns, pantry cards, form controls, focus states.
+   Loaded after the existing sheets so it only adjusts spacing and
+   the components that were rebuilt.
+   ============================================================ */
+
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 48px;
+  --container-max: 1240px;
+}
+
+.container { width: min(var(--container-max), 92%); }
+
+.page-main > .container:first-child,
+.page-main > .page-head:first-child { margin-top: var(--space-5); }
+
+.section-pad { padding: var(--space-6) 0; }
+
+/* ---------------- Centered page header ---------------- */
+.page-head {
+  width: min(var(--container-max), 92%);
+  margin: var(--space-5) auto var(--space-4);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+.page-head h1 {
+  font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.2rem);
+  letter-spacing: -0.5px;
+  margin-bottom: var(--space-2);
+}
+.page-head p {
+  color: var(--text-light);
+  max-width: 62ch;
+  font-size: 1rem;
+}
+@media (max-width: 640px) {
+  .page-head { flex-direction: column; align-items: flex-start; }
+}
+
+/* ---------------- Navigation ---------------- */
+.nav-inner { height: 72px; gap: var(--space-4); }
+
+.nav-main {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 13px;
+  border-radius: 10px;
+  font-size: 0.93rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  background: none;
+  border: none;
+  line-height: 1.2;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.nav-link:hover { background: var(--bg-alt); color: var(--primary); }
+.nav-link.active { background: var(--primary-light); color: var(--primary); }
+
+.nav-chev { font-size: 0.72rem; opacity: 0.65; }
+
+.nav-drop { position: relative; display: flex; align-items: center; }
+
+.nav-drop-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  min-width: 210px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lg);
+  padding: 6px;
+  display: none;
+  z-index: 120;
+}
+.nav-drop-panel.nav-drop-right { left: auto; right: 0; }
+.nav-drop.open .nav-drop-panel { display: block; }
+
+.nav-drop-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.93rem;
+  font-weight: 500;
+  color: var(--text);
+  background: none;
+  border: none;
+}
+.nav-drop-item:hover { background: var(--primary-light); color: var(--primary); }
+.nav-drop-item.active { color: var(--primary); font-weight: 600; }
+.nav-drop-danger { color: var(--danger); }
+.nav-drop-danger:hover { background: #fdecec; color: var(--danger); }
+
+.nav-user { display: flex; align-items: center; gap: var(--space-2); }
+.nav-user-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px 5px 5px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  max-width: 190px;
+}
+.nav-user-btn:hover { border-color: var(--primary); }
+.nav-user-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.nav-auth { display: flex; align-items: center; gap: var(--space-2); }
+.nav-mobile-auth { display: none; }
+.nav-lang-icon { font-size: 0.95rem; }
+.lang-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--bg-alt) url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b6b76'/%3E%3C/svg%3E") no-repeat right 9px center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 7px 26px 7px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  max-width: 118px;
+}
+
+@media (max-width: 1180px) {
+  .nav-main { gap: 0; }
+  .nav-link { padding: 9px 9px; font-size: 0.88rem; }
+}
+
+@media (max-width: 1024px) {
+  .nav-main {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+    padding: var(--space-3);
+    z-index: 130;
+  }
+  .nav-main.open { display: flex; }
+  .nav-link { width: 100%; justify-content: flex-start; padding: 11px 12px; }
+  .nav-drop { display: block; width: 100%; }
+  .nav-drop-btn { justify-content: space-between; }
+  .nav-drop-panel {
+    position: static;
+    display: block;
+    box-shadow: none;
+    border: none;
+    padding: 0 0 0 12px;
+    min-width: 0;
+    background: transparent;
+  }
+  .nav-drop-panel .nav-drop-item { padding-left: 12px; }
+  .nav-mobile-auth {
+    display: flex;
+    gap: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--border);
+    margin-top: var(--space-2);
+  }
+  .nav-user-name { display: none; }
+  .nav-toggle { display: inline-flex; }
+  .nav-auth { display: none; }
+}
+
+@media (max-width: 480px) {
+  .nav-inner { height: 64px; gap: var(--space-2); }
+  .logo-text { font-size: 1.15rem; }
+  .lang-select { max-width: 92px; padding-right: 22px; }
+}
+
+/* ---------------- Pantry ---------------- */
+.pantry-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  align-items: stretch;
+  margin-bottom: var(--space-4);
+}
+.pantry-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+.pantry-stat strong { font-size: 1.75rem; line-height: 1.1; color: var(--dark); }
+.pantry-stat span { font-size: 0.85rem; color: var(--text-light); }
+.pantry-stat.is-warn strong { color: var(--accent); }
+.pantry-stat.is-danger strong { color: var(--danger); }
+.pantry-stats .save-note { grid-column: 1 / -1; }
+
+@media (max-width: 640px) {
+  .pantry-stats { grid-template-columns: 1fr 1fr; }
+  .pantry-stat:first-child { grid-column: 1 / -1; }
+}
+
+.pantry-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .pantry-layout { grid-template-columns: 1fr; }
+}
+
+.pantry-panel {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+.pantry-panel h3 { margin-bottom: var(--space-3); font-size: 1.05rem; }
+
+.pantry-add {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+.pantry-add .btn { width: 100%; }
+
+.pantry-section { margin-bottom: var(--space-5); }
+
+.pantry-filters { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: flex-end; margin-bottom: var(--space-3); }
+.pantry-filter { display: flex; flex-direction: column; gap: 6px; font-size: 0.82rem; font-weight: 600; color: var(--text-light); }
+
+/* ---------------- Form controls ---------------- */
+select.form-control,
+.pantry-filter select,
+.filter-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--white) url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b6b76'/%3E%3C/svg%3E") no-repeat right 12px center;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 34px 10px 12px;
+  color: var(--text);
+  min-height: 42px;
+}
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid rgba(232, 89, 12, 0.45);
+  outline-offset: 2px;
+}
+
+/* ---------------- Cards and grids ---------------- */
+.recipe-grid { gap: var(--space-4); }
+.card, .recipe-card {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.recipe-card:hover { box-shadow: var(--shadow-md); }
+
+/* ---------------- RTL ---------------- */
+[dir="rtl"] .nav-drop-panel { left: auto; right: 0; }
+[dir="rtl"] .nav-drop-item { text-align: right; }
+[dir="rtl"] .pantry-add .btn { width: 100%; }
+
+/* Keep long translated labels inside their controls. */
+.btn, .nav-link, .nav-drop-item, .badge, .tab, .choice-chip {
+  overflow-wrap: anywhere;
+}

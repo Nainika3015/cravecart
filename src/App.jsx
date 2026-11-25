@@ -3,8 +3,8 @@
    BrowserRouter route map.
 
    Public      /login  /signup          (PublicOnlyRoute)
-   User module /  /explore  /recipe/:id /saved /collections
-               /create /my-recipes /profile      (UserRoute + UserLayout)
+   User module /  /explore  /pantry  /recipe/:id
+               /saved /collections /create /my-recipes /profile
    Admin module /admin  /admin/recipes  /admin/recipes/add
                /admin/recipes/edit/:id  /admin/users
                /admin/categories  /admin/reviews (AdminRoute + AdminLayout)
@@ -22,6 +22,8 @@ import Login from './pages/Login.jsx';
 import Signup from './pages/Signup.jsx';
 import Home from './pages/Home.jsx';
 import Explore from './pages/Explore.jsx';
+import Onboarding from './pages/Onboarding.jsx';
+import Pantry from './pages/Pantry.jsx';
 import RecipeDetails from './pages/RecipeDetails.jsx';
 import Saved from './pages/Saved.jsx';
 import Collections from './pages/Collections.jsx';
@@ -46,6 +48,8 @@ export default function App() {
       {/* ---------- User module ---------- */}
       <Route path="/" element={<UserRoute><Home /></UserRoute>} />
       <Route path="/explore" element={<UserRoute><Explore /></UserRoute>} />
+      <Route path="/onboarding" element={<UserRoute><Onboarding /></UserRoute>} />
+      <Route path="/pantry" element={<UserRoute><Pantry /></UserRoute>} />
       <Route path="/recipe/:id" element={<UserRoute><RecipeDetails /></UserRoute>} />
       <Route path="/saved" element={<UserRoute><Saved /></UserRoute>} />
       <Route path="/collections" element={<UserRoute><Collections /></UserRoute>} />

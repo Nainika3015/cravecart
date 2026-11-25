@@ -13,10 +13,8 @@ import ConfirmModal from '../components/ConfirmModal.jsx';
 import { Modal } from '../components/ConfirmModal.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useToast } from '../context/ToastContext.jsx';
-import { getRecipes, deleteRecipeCascade } from '../services/storageService.js';
+import { getRecipes, deleteRecipeCascade, FALLBACK_IMG } from '../services/storageService.js';
 import { fbGetRecipeRating } from '../services/storageCore.js';
-
-const FALLBACK_IMG = 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80';
 
 export default function MyRecipes() {
   const { user, refreshSession } = useAuth();
