@@ -84,9 +84,9 @@ test('coverage report', () => {
   const report = coverage();
   /* Printed so the figure reported to the user is reproducible. */
   console.log('Translation coverage (% of English key set):', report);
-  /* The floor guards against an accidentally empty dictionary; it is not
-     a claim of completeness. The printed table is the reported figure. */
+  /* Every supported language must cover the complete English key set:
+     no key may silently fall back to English. */
   REQUIRED.forEach((code) => {
-    assert.ok(report[code] >= 30, `${code} coverage unexpectedly low: ${report[code]}%`);
+    assert.equal(report[code], 100, `${code} is only ${report[code]}% translated`);
   });
 });

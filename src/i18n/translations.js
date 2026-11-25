@@ -19,6 +19,7 @@ import { LOCALES_CORE } from './locales-core.js';
 import { LOCALES_D } from './locales-d.js';
 import { LOCALES_E } from './locales-e.js';
 import { LOCALES_F } from './locales-f.js';
+import { LOCALES_G } from './locales-g.js';
 
 export const LANGUAGES = [
   { code: 'en', label: 'English', native: 'English', rtl: false },
@@ -728,7 +729,7 @@ Object.keys(PAGE_STRINGS).forEach((code) => {
    back to English per key instead of pretending to be complete. */
 /* Merge per language across every source file: a later file must add to
    a language, never replace the earlier ones. */
-[LOCALES_A, LOCALES_B, LOCALES_C, LOCALES_CORE, LOCALES_D, LOCALES_E, LOCALES_F].forEach((source) => {
+[LOCALES_A, LOCALES_B, LOCALES_C, LOCALES_CORE, LOCALES_D, LOCALES_E, LOCALES_F, LOCALES_G].forEach((source) => {
   Object.keys(source).forEach((code) => {
     if (!SUPPORTED.has(code)) return;
     if (!TRANSLATIONS[code]) TRANSLATIONS[code] = {};
